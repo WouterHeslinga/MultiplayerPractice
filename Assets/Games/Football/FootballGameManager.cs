@@ -1,17 +1,37 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class FootballGameManager : NetworkBehaviour
 {
-    private GameObject ball;
+    private List<GameObject> balls = new List<GameObject>();
     private ScoreManager scoreManager;
     private TeamManager teamManager;
+
+    [SyncVar] public float nextBallTimer;
+    private static readonly int BallTimer = 30;
     
     private void Awake()
     {
         scoreManager = FindObjectOfType<ScoreManager>();
         teamManager = FindObjectOfType<TeamManager>();
+    }
+
+    private void Update()
+    {
+        if(!isServer)
+            return;
+        
+        nextBallTimer -= Time.deltaTime;
+        
+        if(nextBallTimer > 0)
+            return;
+        
+        SpawnBall();
+        nextBallTimer = BallTimer;
     }
 
     public override void OnStartServer()
@@ -23,22 +43,31 @@ public class FootballGameManager : NetworkBehaviour
         scoreManager.OnScoreChanged += ResetGame;
         
         SpawnBall();
+        nextBallTimer = BallTimer;
     }
 
     [Server]
     private void SpawnBall()
     {
         var ballPrefab = NetworkManager.singleton.spawnPrefabs.Find(prefab => prefab.name == "Football");
-        ball = Instantiate(ballPrefab);
-        NetworkServer.Spawn(ball);
+
+        var ballPosition = balls.Count == 0 ? Vector3.zero : new Vector3(0, Random.Range(-4f, 4f), 0);
+
+        var newBall = Instantiate(ballPrefab, ballPosition, Quaternion.identity);
+        balls.Add(newBall);
+        NetworkServer.Spawn(newBall);
     }
 
     [Server]
     public void ResetGame()
     {
-        ball.transform.position = Vector3.zero;
-        ball.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        foreach (var ball in balls)
+            NetworkServer.Destroy(ball);
         
+        balls = new List<GameObject>();
+        
+        nextBallTimer = BallTimer;
+        SpawnBall();
         teamManager.ResetPlayers();
     }
 }

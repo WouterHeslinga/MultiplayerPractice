@@ -7,15 +7,16 @@ using UnityEngine;
 public class PlayerMovement : NetworkBehaviour
 {
     [SerializeField] private float speed;
-    
+
     private void Update()
     {
         if(!isLocalPlayer)
             return;
 
         var movement = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        
         transform.position += movement.normalized * (Time.deltaTime * speed);
-
+        
         Shooting();
         LookAtMouse();
     }
@@ -31,21 +32,21 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Shooting()
     {
-        var hit = Physics2D.Raycast(transform.position, transform.up, 1.5f);
-        Debug.DrawRay(transform.position, transform.up, Color.red);
+        var body = transform;
+        var hit = Physics2D.Raycast(body.position, body.up, 1.5f);
         
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
         {
-            if(!hit || hit.transform.GetComponent<Rigidbody2D>() == null)
+            if(!hit || hit.transform.TryGetComponent<FootBall>(out var ball) == false)
                 return;
             
-            CmdAddForce(transform.up);
+            CmdAddForce(ball.gameObject, transform.up);
         }
     }
 
     [Command]
-    public void CmdAddForce(Vector3 direction)
+    public void CmdAddForce(GameObject ball, Vector3 direction)
     {
-        FindObjectOfType<FootBall>().AddForce(direction);
+        ball.GetComponent<FootBall>().AddForce(direction);
     }
 }

@@ -13,7 +13,6 @@
           <e p="PlayerMovement.cs" t="Include" />
           <e p="PlayerSpawnSystem.cs" t="Include" />
           <e p="ScoreManager.cs" t="Include" />
-          <e p="ScoreUi.cs" t="Include" />
           <e p="Team.cs" t="Include" />
           <e p="TeamManager.cs" t="Include" />
           <e p="TeamSpawnPosition.cs" t="Include" />
@@ -22,6 +21,7 @@
           <e p="Football" t="Include">
             <e p="FootBall.cs" t="Include" />
             <e p="FootballGameManager.cs" t="Include" />
+            <e p="FootballUi.cs" t="Include" />
             <e p="Goal.cs" t="Include" />
           </e>
         </e>
