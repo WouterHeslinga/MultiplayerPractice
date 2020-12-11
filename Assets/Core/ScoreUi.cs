@@ -19,6 +19,6 @@ public class ScoreUi : MonoBehaviour
 
     private void UpdateUi()
     {
-        score.text = $"{scoreManager.LeftScore}-{scoreManager.RightScore}";
+        score.text = $"{scoreManager.RedScore}-{scoreManager.BlueScore}";
     }
 }

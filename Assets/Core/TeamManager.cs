@@ -22,13 +22,10 @@ public class TeamManager : NetworkBehaviour
         };
         
         spawnSystem = FindObjectOfType<PlayerSpawnSystem>();
-
-        GeneralNetworkManager.OnConnectionReadied += AddPlayerToTeam;
-        GeneralNetworkManager.OnClientDisconnected -= RemovePlayer;
     }
 
     [Server]
-    private void RemovePlayer(NetworkConnection connection)
+    public void RemovePlayer(NetworkConnection connection)
     {
         var leftPlayer = connection.identity.gameObject.GetComponent<Player>();
 
@@ -39,7 +36,7 @@ public class TeamManager : NetworkBehaviour
     }
 
     [Server]
-    private void AddPlayerToTeam(NetworkConnection connection)
+    public void AddPlayerToTeam(NetworkConnection connection)
     {
         var minSizeTeam = teams.Min(t => t.Value.Count);
         var lowPlayerTeams = teams.Where(t => t.Value.Count == minSizeTeam).ToList();
