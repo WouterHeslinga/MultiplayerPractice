@@ -13,12 +13,6 @@ public class FootballGameManager : NetworkBehaviour
 
     [SyncVar] public float nextBallTimer;
     private static readonly int BallTimer = 30;
-    
-    private void Awake()
-    {
-        scoreManager = FindObjectOfType<ScoreManager>();
-        teamManager = FindObjectOfType<TeamManager>();
-    }
 
     private void Update()
     {
@@ -38,6 +32,9 @@ public class FootballGameManager : NetworkBehaviour
     {
         base.OnStartServer();
         
+        scoreManager = FindObjectOfType<ScoreManager>();
+        teamManager = FindObjectOfType<TeamManager>();
+        
         GeneralNetworkManager.OnConnectionReadied += teamManager.AddPlayerToTeam;
         GeneralNetworkManager.OnClientDisconnected -= teamManager.RemovePlayer;
         scoreManager.OnScoreChanged += ResetGame;
@@ -50,7 +47,6 @@ public class FootballGameManager : NetworkBehaviour
     private void SpawnBall()
     {
         var ballPrefab = NetworkManager.singleton.spawnPrefabs.Find(prefab => prefab.name == "Football");
-
         var ballPosition = balls.Count == 0 ? Vector3.zero : new Vector3(0, Random.Range(-4f, 4f), 0);
 
         var newBall = Instantiate(ballPrefab, ballPosition, Quaternion.identity);

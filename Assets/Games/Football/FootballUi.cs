@@ -1,18 +1,21 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using TMPro;
 using UnityEngine;
 
-public class FootballUi : MonoBehaviour
+public class FootballUi : NetworkBehaviour
 {
     [SerializeField] private TextMeshProUGUI score;
     [SerializeField] private TextMeshProUGUI nextBall;
     private ScoreManager scoreManager;
     private FootballGameManager gameManager;
 
-    private void Awake()
+    public override void OnStartClient()
     {
+        base.OnStartClient();
+        
         scoreManager = FindObjectOfType<ScoreManager>();
         gameManager = FindObjectOfType<FootballGameManager>();
         
@@ -24,6 +27,6 @@ public class FootballUi : MonoBehaviour
     private void UpdateUi()
     {
         score.text = $"{scoreManager.RedScore}-{scoreManager.BlueScore}";
-        nextBall.text = $"{gameManager.nextBallTimer:F1}";
+        nextBall.text = $"Extra ball in: {gameManager.nextBallTimer:F1}s";
     }
 }
