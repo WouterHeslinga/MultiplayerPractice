@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Mirror;
+using Telepathy;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -34,11 +33,13 @@ public class FootballGameManager : NetworkBehaviour
         
         scoreManager = FindObjectOfType<ScoreManager>();
         teamManager = FindObjectOfType<TeamManager>();
-        
+
         GeneralNetworkManager.OnConnectionReadied += teamManager.AddPlayerToTeam;
         GeneralNetworkManager.OnClientDisconnected -= teamManager.RemovePlayer;
-        scoreManager.OnScoreChanged += ResetGame;
         
+
+        scoreManager.OnScoreChanged += ResetGame;
+
         SpawnBall();
         nextBallTimer = BallTimer;
     }

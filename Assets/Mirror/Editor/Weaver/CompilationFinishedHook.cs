@@ -26,10 +26,6 @@ namespace Mirror.Weaver
         // controls weather Weaver errors are reported direct to the Unity console (tests enable this)
         public static bool UnityLogEnabled = true;
 
-        // holds the result status of our latest Weave operation
-        // NOTE: WeaveFailed is critical to unit tests, but isn't used for anything else. 
-        public static bool WeaveFailed { get; private set; }
-
         // warning message handler that also calls OnWarningMethod delegate
         static void HandleWarning(string msg)
         {
@@ -45,7 +41,7 @@ namespace Mirror.Weaver
         }
 
         [InitializeOnLoadMethod]
-        static void OnInitializeOnLoad()
+        public static void OnInitializeOnLoad()
         {
             CompilationPipeline.assemblyCompilationFinished += OnCompilationFinished;
 
@@ -142,28 +138,26 @@ namespace Mirror.Weaver
             }
 
             HashSet<string> dependencyPaths = GetDependecyPaths(assemblyPath);
+            dependencyPaths.Add(Path.GetDirectoryName(mirrorRuntimeDll));
+            dependencyPaths.Add(Path.GetDirectoryName(unityEngineCoreModuleDLL));
+            Log.WarningMethod = HandleWarning;
+            Log.ErrorMethod = HandleError;
 
-            // passing null in the outputDirectory param will do an in-place update of the assembly
-            if (Program.Process(unityEngineCoreModuleDLL, mirrorRuntimeDll, null, new[] { assemblyPath }, dependencyPaths.ToArray(), HandleWarning, HandleError))
-            {
-                // NOTE: WeaveFailed is critical for unit tests but isn't used elsewhere
-                WeaveFailed = false;
-            }
-            else
+            if (!Weaver.WeaveAssembly(assemblyPath, dependencyPaths.ToArray()))
             {
                 // Set false...will be checked in \Editor\EnterPlayModeSettingsCheck.CheckSuccessfulWeave()
                 SessionState.SetBool("MIRROR_WEAVE_SUCCESS", false);
-
-                WeaveFailed = true;
                 if (UnityLogEnabled) Debug.LogError("Weaving failed for: " + assemblyPath);
             }
         }
 
-        private static HashSet<string> GetDependecyPaths(string assemblyPath)
+        static HashSet<string> GetDependecyPaths(string assemblyPath)
         {
             // build directory list for later asm/symbol resolving using CompilationPipeline refs
-            HashSet<string> dependencyPaths = new HashSet<string>();
-            dependencyPaths.Add(Path.GetDirectoryName(assemblyPath));
+            HashSet<string> dependencyPaths = new HashSet<string>
+            {
+                Path.GetDirectoryName(assemblyPath)
+            };
             foreach (UnityAssembly unityAsm in CompilationPipeline.GetAssemblies())
             {
                 if (unityAsm.outputPath != assemblyPath)

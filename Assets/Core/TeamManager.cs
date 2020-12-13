@@ -9,16 +9,16 @@ public class TeamManager : NetworkBehaviour
 {
     private PlayerSpawnSystem spawnSystem;
 
-    private Dictionary<Team, List<Player>> teams;
+    private Dictionary<Team, List<GamePlayer>> teams;
 
     public override void OnStartServer()
     {
         base.OnStartServer();
 
-        teams = new Dictionary<Team, List<Player>>
+        teams = new Dictionary<Team, List<GamePlayer>>
         {
-            {Team.Red, new List<Player>()},
-            {Team.Blue, new List<Player>()}
+            {Team.Red, new List<GamePlayer>()},
+            {Team.Blue, new List<GamePlayer>()}
         };
         
         spawnSystem = FindObjectOfType<PlayerSpawnSystem>();
@@ -27,7 +27,7 @@ public class TeamManager : NetworkBehaviour
     [Server]
     public void RemovePlayer(NetworkConnection connection)
     {
-        var leftPlayer = connection.identity.gameObject.GetComponent<Player>();
+        var leftPlayer = connection.identity.gameObject.GetComponent<GamePlayer>();
 
         teams[leftPlayer.Team].Remove(leftPlayer);
         
@@ -43,8 +43,8 @@ public class TeamManager : NetworkBehaviour
         var chosenTeam = lowPlayerTeams[Random.Range(0, lowPlayerTeams.Count)].Key;
 
         var playerObj = spawnSystem.SpawnPlayer(connection, chosenTeam);
-        var player = playerObj.GetComponent<Player>();
-        player.SetTeam(chosenTeam, connection);
+        var player = playerObj.GetComponent<GamePlayer>();
+        player.SetTeam(chosenTeam);
         teams[chosenTeam].Add(player);
     }
 

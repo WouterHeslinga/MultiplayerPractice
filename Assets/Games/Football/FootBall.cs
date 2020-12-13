@@ -13,7 +13,7 @@ public class FootBall : NetworkBehaviour
     [Server]
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (!other.gameObject.TryGetComponent<Player>(out var player))
+        if (!other.gameObject.TryGetComponent<GamePlayer>(out var player))
             return;
     
         var direction = player.transform.position - transform.position;
