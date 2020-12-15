@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GeneralNetworkManager : NetworkManager
 {
+    [SerializeField] private GameObject gamePlayerPrefab;
+    
     public List<RoomPlayer> RoomPlayers = new List<RoomPlayer>();
     
     public static event Action<NetworkConnection> OnClientConnected;
@@ -32,10 +35,10 @@ public class GeneralNetworkManager : NetworkManager
 
     public override void OnClientConnect(NetworkConnection conn)
     {
-        base.OnClientConnect(conn);
-        
         Debug.Log("Client connected");
         OnClientConnected?.Invoke(conn);
+        
+        base.OnClientConnect(conn);
     }
 
     public override void OnClientDisconnect(NetworkConnection conn)
@@ -49,24 +52,42 @@ public class GeneralNetworkManager : NetworkManager
     public override void OnServerReady(NetworkConnection conn)
     {
         base.OnServerReady(conn);
-        
-        var player = Instantiate(playerPrefab).GetComponent<RoomPlayer>();
-        player.IsHost = RoomPlayers.Count == 0;
 
-        NetworkServer.AddPlayerForConnection(conn, player.gameObject);
+        if (SceneManager.GetActiveScene().name == "Lobby")
+        {
+            var player = Instantiate(playerPrefab).GetComponent<RoomPlayer>();
+            player.IsHost = RoomPlayers.Count == 0;
+            NetworkServer.AddPlayerForConnection(conn, player.gameObject);
+        }
         
         Debug.Log("Client readied");
         OnConnectionReadied?.Invoke(conn);
     }
-    
-    public override void OnServerDisconnect(NetworkConnection conn)
-    {
-        if (conn.identity != null)
-        {
-            var player = conn.identity.GetComponent<RoomPlayer>();
-            RoomPlayers.Remove(player);
-        }
 
-        base.OnServerDisconnect(conn);
+    public override void OnServerAddPlayer(NetworkConnection conn)
+    {
+        base.OnServerAddPlayer(conn);
     }
+
+    public void StartGame()
+    {
+        if(!IsReadyToStart)
+            return;
+        
+        ServerChangeScene("MainScene");
+    }
+
+    public override void OnServerChangeScene(string newSceneName)
+    {
+        for (int i = RoomPlayers.Count - 1; i >= 0; i--)
+        {
+            var conn = RoomPlayers[i].connectionToClient;
+            var gamePlayer = Instantiate(gamePlayerPrefab);
+            
+            //NetworkServer.Destroy(conn.identity.gameObject);
+            NetworkServer.ReplacePlayerForConnection(conn, gamePlayer, true);
+        }
+    }
+
+    private bool IsReadyToStart => RoomPlayers.TrueForAll(player => player.IsReady);
 }

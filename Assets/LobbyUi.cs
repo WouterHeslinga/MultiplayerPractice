@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using NUnit.Framework;
 using TMPro;
 using UnityEngine;
 
@@ -11,13 +10,14 @@ public class LobbyUi : MonoBehaviour
     private List<GameObject> unitList = new List<GameObject>();
 
     private GeneralNetworkManager networkManager;
+    private RoomPlayer roomPlayer;
 
     private void Awake()
     {
         networkManager = FindObjectOfType<GeneralNetworkManager>();
     }
 
-    public void Test()
+    public void UpdatePlayerList()
     {
         for (int i = unitList.Count - 1; i >= 0; i--)
         {
@@ -28,9 +28,26 @@ public class LobbyUi : MonoBehaviour
         foreach (var player in networkManager.RoomPlayers)
         {
             var playerUnit = Instantiate(lobbyPlayerUnitPrefab, playerListParent);
-            playerUnit.GetComponentInChildren<TextMeshProUGUI>().text = player.Name;
+            playerUnit.GetComponentInChildren<TextMeshProUGUI>().text = $"{player.Name} {(player.IsReady ? "Ready": "Not Ready")}";
             
             unitList.Add(playerUnit);
         }
+    }
+
+    public void Initialize(RoomPlayer player)
+    {
+        roomPlayer = player;
+
+        RoomPlayer.OnPlayerChanged += UpdatePlayerList;
+    }
+
+    public void ToggleReady()
+    {
+        roomPlayer.CmdSetReadyState(!roomPlayer.IsReady);
+    }
+
+    public void StartGame()
+    {
+        roomPlayer.CmdStartGame();
     }
 }

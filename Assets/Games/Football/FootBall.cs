@@ -10,7 +10,7 @@ public class FootBall : NetworkBehaviour
         GetComponent<Rigidbody2D>().AddForce(direction * 500);
     }
 
-    [Server]
+    [ServerCallback]
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (!other.gameObject.TryGetComponent<GamePlayer>(out var player))

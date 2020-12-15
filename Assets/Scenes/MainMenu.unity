@@ -652,34 +652,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7424c1070fad4ba2a7a96b02fbeb4bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnClientConnected:
-    m_PersistentCalls:
-      m_Calls: []
-  OnClientDataReceived:
-    m_PersistentCalls:
-      m_Calls: []
-  OnClientError:
-    m_PersistentCalls:
-      m_Calls: []
-  OnClientDisconnected:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerConnected:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerDataReceived:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerError:
-    m_PersistentCalls:
-      m_Calls: []
-  OnServerDisconnected:
-    m_PersistentCalls:
-      m_Calls: []
   port: 7777
   NoDelay: 1
   serverMaxMessageSize: 16384
+  serverMaxReceivesPerTick: 10000
   clientMaxMessageSize: 16384
+  clientMaxReceivesPerTick: 1000
 --- !u!114 &912218348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -694,7 +672,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dontDestroyOnLoad: 1
   runInBackground: 1
-  startOnHeadless: 1
+  autoStartServerBuild: 1
   showDebugMessages: 0
   serverTickRate: 60
   offlineScene: Assets/Scenes/MainMenu.unity
@@ -702,6 +680,8 @@ MonoBehaviour:
   transport: {fileID: 912218347}
   networkAddress: localhost
   maxConnections: 4
+  disconnectInactiveConnections: 0
+  disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 2574170441610166178, guid: 5cb825ea86d32eb4d915bffc11a96137, type: 3}
   autoCreatePlayer: 0
@@ -709,6 +689,8 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 5677675396803176100, guid: 2c3e47312a4dc1943b1957918b9fb252, type: 3}
   - {fileID: 6950052580112591830, guid: 5bf4a8939a74eaa4098e4bffb7fa6249, type: 3}
+  gamePlayerPrefab: {fileID: 6950052580112591830, guid: 5bf4a8939a74eaa4098e4bffb7fa6249, type: 3}
+  RoomPlayers: []
 --- !u!1 &992830041
 GameObject:
   m_ObjectHideFlags: 0

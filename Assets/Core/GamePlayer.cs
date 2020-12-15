@@ -20,6 +20,8 @@ public class GamePlayer : NetworkBehaviour
 
     public void ChangeColor(Team oldT, Team newT)
     {
+        if(!isLocalPlayer) return;
+        
         playerColor.CmdSetupColor(Team == Team.Blue ? Color.blue : Color.red);
     }
 
