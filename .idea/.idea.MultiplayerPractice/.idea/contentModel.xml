@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\Users\Wouter\AppData\Local\JetBrains\Rider2020.2\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\Wouter\AppData\Local\JetBrains\Rider2020.2\resharper-host\Local\Transient\Rider\v202\SolutionCaches\_MultiplayerPractice.1926699615.00" t="ExcludeRecursive" />
+    <e p="C:\Users\Wouter\AppData\Local\JetBrains\Rider2020.3\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Wouter\AppData\Local\JetBrains\Rider2020.3\resharper-host\Local\Transient\Rider\v203\SolutionCaches\_MultiplayerPractice.1926699615.00" t="ExcludeRecursive" />
     <e p="C:\Users\Wouter\Documents\MultiplayerPractice" t="IncludeRecursive">
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="Core" t="Include">
+          <e p="FootballPlayer.cs" t="Include" />
           <e p="GamePlayer.cs" t="Include" />
           <e p="GeneralNetworkManager.cs" t="Include" />
           <e p="PlayerColor.cs" t="Include" />
+          <e p="PlayerContainer.cs" t="Include" />
           <e p="PlayerMovement.cs" t="Include" />
           <e p="PlayerSpawnSystem.cs" t="Include" />
           <e p="ScoreManager.cs" t="Include" />

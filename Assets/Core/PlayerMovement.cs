@@ -10,7 +10,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private void Update()
     {
-        if(!isLocalPlayer)
+        if(!hasAuthority)
             return;
 
         var movement = new Vector3(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
@@ -40,13 +40,13 @@ public class PlayerMovement : NetworkBehaviour
             if(!hit || hit.transform.TryGetComponent<FootBall>(out var ball) == false)
                 return;
             
-            CmdAddForce(ball.gameObject, transform.up);
+            CmdAddForce(ball.gameObject, gameObject);
         }
     }
 
     [Command]
-    public void CmdAddForce(GameObject ball, Vector3 direction)
+    public void CmdAddForce(GameObject ball, GameObject shooter)
     {
-        ball.GetComponent<FootBall>().AddForce(direction);
+        ball.GetComponent<FootBall>().AddForce(shooter);
     }
 }

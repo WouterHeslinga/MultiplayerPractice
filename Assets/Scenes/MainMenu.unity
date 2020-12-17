@@ -399,7 +399,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Server adress...
+  m_text: localhost
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -689,6 +689,7 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 5677675396803176100, guid: 2c3e47312a4dc1943b1957918b9fb252, type: 3}
   - {fileID: 6950052580112591830, guid: 5bf4a8939a74eaa4098e4bffb7fa6249, type: 3}
+  gameScene: Assets/Scenes/MainScene.unity
   gamePlayerPrefab: {fileID: 6950052580112591830, guid: 5bf4a8939a74eaa4098e4bffb7fa6249, type: 3}
   RoomPlayers: []
 --- !u!1 &992830041

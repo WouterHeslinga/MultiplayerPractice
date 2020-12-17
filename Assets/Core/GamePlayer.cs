@@ -1,33 +1,27 @@
+using System;
 using Mirror;
-using UnityEngine;
 
 public class GamePlayer : NetworkBehaviour
 {
-    private PlayerColor playerColor;
-
-    [SyncVar(hook = nameof(ChangeColor))]
+    [SyncVar]
+    public string Name;
+    [SyncVar]
     public Team Team;
-    
+
     private void Awake()
     {
-        playerColor = GetComponent<PlayerColor>();
+        DontDestroyOnLoad(gameObject);
     }
 
+    [Server]
     public void SetTeam(Team team)
     {
         Team = team;
     }
-
-    public void ChangeColor(Team oldT, Team newT)
+    
+    [Server]
+    public void SetDisplayName(string newName)
     {
-        if(!isLocalPlayer) return;
-        
-        playerColor.CmdSetupColor(Team == Team.Blue ? Color.blue : Color.red);
-    }
-
-    [ClientRpc]
-    public void RpcSetPlayerLocation(Vector3 getRandomSpawnLocation)
-    {
-        transform.position = getRandomSpawnLocation;
+        Name = newName;
     }
 }

@@ -1,24 +1,22 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
-using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class TeamManager : NetworkBehaviour
 {
     private PlayerSpawnSystem spawnSystem;
 
-    private Dictionary<Team, List<GamePlayer>> teams;
+    private Dictionary<Team, List<PlayerContainer>> teams;
 
     public override void OnStartServer()
     {
         base.OnStartServer();
 
-        teams = new Dictionary<Team, List<GamePlayer>>
+        teams = new Dictionary<Team, List<PlayerContainer>>
         {
-            {Team.Red, new List<GamePlayer>()},
-            {Team.Blue, new List<GamePlayer>()}
+            {Team.Red, new List<PlayerContainer>()},
+            {Team.Blue, new List<PlayerContainer>()}
         };
         
         spawnSystem = FindObjectOfType<PlayerSpawnSystem>();
@@ -29,10 +27,9 @@ public class TeamManager : NetworkBehaviour
     {
         var leftPlayer = connection.identity.gameObject.GetComponent<GamePlayer>();
 
-        teams[leftPlayer.Team].Remove(leftPlayer);
+        teams[leftPlayer.Team].Remove(teams[leftPlayer.Team].First(cont => cont.GamePlayer == leftPlayer));
         
         NetworkServer.Destroy(leftPlayer.gameObject);
-        teams[leftPlayer.Team].Remove(leftPlayer);
     }
 
     [Server]
@@ -43,9 +40,12 @@ public class TeamManager : NetworkBehaviour
         var chosenTeam = lowPlayerTeams[Random.Range(0, lowPlayerTeams.Count)].Key;
 
         var playerObj = spawnSystem.SpawnPlayer(connection, chosenTeam);
-        var player = playerObj.GetComponent<GamePlayer>();
-        player.SetTeam(chosenTeam);
-        teams[chosenTeam].Add(player);
+        var player = playerObj.GetComponent<FootballPlayer>();
+        var owner = connection.identity.GetComponent<GamePlayer>();
+        owner.SetTeam(chosenTeam);
+        
+        player.Initialize(owner);
+        teams[chosenTeam].Add(new PlayerContainer(owner, player));
     }
 
     [Server]
@@ -55,7 +55,7 @@ public class TeamManager : NetworkBehaviour
         {
             foreach (var player in team.Value)
             {
-                player.RpcSetPlayerLocation(PlayerSpawnSystem.GetRandomSpawnLocation(player.Team));
+                player.FootballPlayer.RpcSetPlayerLocation(PlayerSpawnSystem.GetRandomSpawnLocation(player.GamePlayer.Team));
             }
         }
     }

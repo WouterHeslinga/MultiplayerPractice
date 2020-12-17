@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class GeneralNetworkManager : NetworkManager
 {
+    [Scene] [SerializeField] private string gameScene;
     [SerializeField] private GameObject gamePlayerPrefab;
     
     public List<RoomPlayer> RoomPlayers = new List<RoomPlayer>();
@@ -64,11 +65,6 @@ public class GeneralNetworkManager : NetworkManager
         OnConnectionReadied?.Invoke(conn);
     }
 
-    public override void OnServerAddPlayer(NetworkConnection conn)
-    {
-        base.OnServerAddPlayer(conn);
-    }
-
     public void StartGame()
     {
         if(!IsReadyToStart)
@@ -79,14 +75,40 @@ public class GeneralNetworkManager : NetworkManager
 
     public override void OnServerChangeScene(string newSceneName)
     {
-        for (int i = RoomPlayers.Count - 1; i >= 0; i--)
+        if (newSceneName == "MainScene")
         {
-            var conn = RoomPlayers[i].connectionToClient;
-            var gamePlayer = Instantiate(gamePlayerPrefab);
-            
-            //NetworkServer.Destroy(conn.identity.gameObject);
-            NetworkServer.ReplacePlayerForConnection(conn, gamePlayer, true);
+            for (int i = RoomPlayers.Count - 1; i >= 0; i--)
+            {
+                var conn = RoomPlayers[i].connectionToClient;
+                var playerName = RoomPlayers[i].Name;
+                var gamePlayer = Instantiate(gamePlayerPrefab).GetComponent<GamePlayer>();
+                gamePlayer.SetDisplayName(playerName);
+        
+                NetworkServer.Destroy(conn.identity.gameObject);
+                NetworkServer.ReplacePlayerForConnection(conn, gamePlayer.gameObject, true);
+            }
         }
+        
+        base.OnServerChangeScene(newSceneName);
+    }
+
+    public override void OnServerSceneChanged(string sceneName)
+    {
+        // if (sceneName == "MainScene")
+        // {
+        //     for (int i = RoomPlayers.Count - 1; i >= 0; i--)
+        //     {
+        //         var conn = RoomPlayers[i].connectionToClient;
+        //         var playerName = RoomPlayers[i].Name;
+        //         var gamePlayer = Instantiate(gamePlayerPrefab).GetComponent<GamePlayer>();
+        //         gamePlayer.SetDisplayName(playerName);
+        //
+        //         NetworkServer.Destroy(conn.identity.gameObject);
+        //         NetworkServer.ReplacePlayerForConnection(conn, gamePlayer.gameObject, true);
+        //     }
+        // }
+        
+        base.OnServerSceneChanged(sceneName);
     }
 
     private bool IsReadyToStart => RoomPlayers.TrueForAll(player => player.IsReady);

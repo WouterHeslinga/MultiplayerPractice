@@ -30,7 +30,7 @@ public class PlayerSpawnSystem : NetworkBehaviour
         var spawnPos = GetRandomSpawnLocation(team);
 
         var player = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
-        NetworkServer.AddPlayerForConnection(conn, player);
+        NetworkServer.Spawn(player, conn);
 
         return player;
     }

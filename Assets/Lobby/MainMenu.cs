@@ -17,7 +17,7 @@ public class MainMenu : MonoBehaviour
 
     public void JoinServer()
     {
-        networkManager.networkAddress = ipAdress.text;
+        networkManager.networkAddress = ipAdress.text == "" ? "localhost" : ipAdress.text;
         networkManager.StartClient();
     }
 
